@@ -1,2 +1,3 @@
 # vpype-ttf
-Vpype addon to write text to the vpype pipeline in glyphs
+Vpype plugin for ttf
+See: https://github.com/abey79/vpype
