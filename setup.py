@@ -6,7 +6,7 @@ with open("README.md") as f:
 
 setup(
     name="vpype-ttf",
-    version="0.0.1",
+    version="0.0.2",
     description="vpype ttf plugin",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -31,6 +31,6 @@ setup(
     ],
     entry_points="""
             [vpype.plugins]
-            render=vpype_ttf.font:render
+            ftext=vpype_ttf.ftext:ftext
         """,
 )

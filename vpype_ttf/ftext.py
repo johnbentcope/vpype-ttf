@@ -3,19 +3,31 @@ import numpy as np
 import vpype as vp
 import vpype_cli
 import freetype
-
+from vpype_cli.types import LengthType
 
 @click.command()
-@click.argument("filename", type=vpype_cli.PathType(exists=True))
-@click.argument("text", type=str)
+@click.argument("filename",type=vpype_cli.PathType(exists=True))
+@click.argument("text",type=str)
+@click.option(
+    "-s",
+    "--size",
+    type=LengthType(),
+    default=18,
+    help="Text size (default: 18)."
+)
 @vpype_cli.global_processor
-def render(document: vp.Document, filename: str, text: str):
+
+def ftext(document: vp.Document, filename: str, text: str, size: float):
+    """
+    Load a TTF Font File for Text generation.
+    """
+
     face = freetype.Face(filename)
     resolution_factor = 1024
     font_size = 16 # 16px = 12pt
 
     # Set the font size in pixels
-    face.set_char_size(resolution_factor * 96)
+    face.set_char_size(resolution_factor)
 
     pen = freetype.Vector()
     x_position = 0
@@ -88,4 +100,4 @@ def render(document: vp.Document, filename: str, text: str):
     return document
 
 
-render.help_group = "Text"
+ftext.help_group = "Text"
