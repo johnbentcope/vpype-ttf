@@ -5,6 +5,8 @@ import vpype_cli
 import freetype
 from vpype_cli.types import LengthType
 
+ON_CURVE_POINT = 1
+
 @click.command()
 @click.argument("filename",type=vpype_cli.PathType(exists=True))
 @click.argument("text",type=str)
@@ -25,6 +27,7 @@ def ftext(document: vp.Document, filename: str, text: str, size: float):
     face = freetype.Face(filename)
     resolution_factor = 1024
     font_size = 16 # 16px = 12pt
+    interpolation_points = 50
 
     # Set the font size in pixels
     face.set_char_size(resolution_factor)
@@ -39,51 +42,42 @@ def ftext(document: vp.Document, filename: str, text: str, size: float):
         outline = slot.outline
         start, end = 0, 0
         for contour in range(len(outline.contours)):
-            # print(f"New Contour: {contour}")
+            # see https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/tables/glyf.js#L214
             verts = []
             end = outline.contours[contour]
-            points = outline.points[start:end + 1]
-            tags = outline.tags[start:end + 1]
-            points.append(points[0])
-            tags.append(tags[0])
+            points = [(outline.points[p][0] + 1j * outline.points[p][1], outline.tags[p]) for p in range(start, end+1)]
             start = end + 1
-            segments = [[points[0], ], ]
-            for j in range(0, len(points)):
-                segments[-1].append(points[j])
-                if tags[j] & 1:
-                    segments.append([points[j], ])
+            curr = points[-1]
+            next = points[0]
+            if curr[1] & 1:
+                verts.append(curr[0])
+            else:
+                if next[1] & ON_CURVE_POINT:
+                    verts.append(next[0])
+                else:
+                    verts.append((curr[0] + next[0]) / 2)
 
-            for segment in segments:
-                if len(segment) == 3:
-                    t = np.linspace(0, 1, 50)
-                    x0, y0 = segment[0]
-                    x1, y1 = segment[1]
-                    x2, y2 = segment[2]
+            for i in range(len(points)):
+                curr = next
+                next = points[(i + 1) % len(points)]
+                if curr[1] & ON_CURVE_POINT:
+                    verts.append(curr[0])
+                else:
+                    next2 = next[0]
+                    if not next[1] & ON_CURVE_POINT:
+                        next2 = (curr[0] + next[0]) / 2
+                    # Quad
+                    t = np.linspace(0, 1, interpolation_points)
+                    p0 = verts[-1]
+                    p1 = curr[0]
+                    p2 = next2
                     n_pos = 1 - t
                     pos_2 = t * t
                     n_pos_2 = n_pos * n_pos
                     n_pos_pos = n_pos * t
 
-                    xs = n_pos_2 * x0 + 2 * n_pos_pos * x1 + pos_2 * x2
-                    ys = n_pos_2 * y0 + 2 * n_pos_pos * y1 + pos_2 * y2
-                    verts.extend(xs + 1j * ys)
-                elif len(segment) == 4:
-                    x0, y0 = segment[0]
-                    x1, y1 = segment[1]
-                    x2, y2 = segment[2]
-                    x3, y3 = segment[3]
-                    t = np.linspace(0, 1, 50)
-                    pos_3 = t * t * t
-                    n_pos = 1 - t
-                    n_pos_3 = n_pos * n_pos * n_pos
-                    pos_2_n_pos = t * t * n_pos
-                    n_pos_2_pos = n_pos * n_pos * t
-                    xs = n_pos_3 * x0 + 3 * (n_pos_2_pos * x1 + pos_2_n_pos * x2) + pos_3 * x3
-                    ys = n_pos_3 * y0 + 3 * (n_pos_2_pos * y1 + pos_2_n_pos * y2) + pos_3 * y3
-                    verts.extend(xs + 1j * ys)
-                elif len(segment) == 2:
-                    x, y = segment[-1]
-                    verts.append(x + 1j * y)
+                    ps = n_pos_2 * p0 + 2 * n_pos_pos * p1 + pos_2 * p2
+                    verts.extend(ps)
             verts = np.array(verts, dtype="complex")
             verts += x_position + 1j * y_position
             lc.append(verts)
