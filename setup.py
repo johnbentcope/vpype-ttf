@@ -6,13 +6,13 @@ with open("README.md") as f:
 
 setup(
     name="vpype-ttf",
-    version="0.0.2",
+    version="0.0.3",
     description="vpype ttf plugin",
     long_description=readme,
     long_description_content_type="text/markdown",
-    author="Tatarize",
-    author_email="tatarize@gmail.com",
-    url="https://github.com/tatarize/vpype-ttf/",
+    author="John Cope",
+    author_email="johnbentcope@gmail.com",
+    url="https://github.com/johnbentcope/vpype-ttf/",
     packages=["vpype_ttf"],
     classifiers=[
         "Programming Language :: Python :: 3.7",
