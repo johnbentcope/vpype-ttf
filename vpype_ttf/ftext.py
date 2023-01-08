@@ -26,7 +26,7 @@ def ftext(document: vp.Document, filename: str, text: str, size: float):
 
     face = freetype.Face(filename)
     resolution_factor = 1024
-    font_size = 16 # 16px = 12pt
+    font_size = size
     interpolation_points = 50
 
     # Set the font size in pixels
