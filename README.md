@@ -15,7 +15,7 @@ A shortening of "font text", this command accepts the required arguments of a pa
 Have font file specified, eg:
 * `vpype ftext /usr/share/fonts/truetype/open-sans/OpenSans-Bold.ttf "vpype-ttf" show`
 
-<img width="1031" alt="the text 'vpype-ttf' rendered with vpype show" src="img/vpype-ttf.png">
+<img width="1031" alt="the text 'vpype-ttf' rendered with vpype show" src="https://raw.githubusercontent.com/johnbentcope/vpype-ttf/refs/heads/main/img/vpype-ttf.png">
 
 ## Options
 vpype-ttf currently supports font scaling with the -s or --size option.
