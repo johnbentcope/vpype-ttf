@@ -1,8 +1,10 @@
+import freetype
+
 import click
 import numpy as np
 import vpype as vp
 import vpype_cli
-import freetype
+
 from vpype_cli.types import LengthType
 
 ON_CURVE_POINT = 1
@@ -21,7 +23,7 @@ ON_CURVE_POINT = 1
 
 def ftext(document: vp.Document, filename: str, text: str, size: float):
     """
-    Load a TTF Font File for Text generation.
+    Load a TrueType Font (TTF) file for text generation.
     """
 
     face = freetype.Face(filename)
@@ -35,8 +37,9 @@ def ftext(document: vp.Document, filename: str, text: str, size: float):
     pen = freetype.Vector()
     x_position = 0
     y_position = 0
+    lc = vp.LineCollection()
+
     for character in text:
-        lc = vp.LineCollection()
         face.load_char(character)
         slot = face.glyph
         outline = slot.outline
@@ -87,8 +90,8 @@ def ftext(document: vp.Document, filename: str, text: str, size: float):
         y_position += dy
         pen.x += dx
         pen.y += dy
-        lc.scale(font_size/resolution_factor,-font_size/resolution_factor)
-        document.add(lc)
+    lc.scale(font_size/resolution_factor,-font_size/resolution_factor)
+    document.add(lc)
     del pen
     del face
     return document
