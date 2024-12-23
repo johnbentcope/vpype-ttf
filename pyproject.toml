@@ -1,5 +1,20 @@
 [build-system]
 requires = ["setuptools", "wheel", "numpy"]
 
+[project]
+name="vpype-ttf"
+version="0.0.4"
+dependencies = [
+  "click",
+  "vpype>=1.9,<2.0",
+  "numpy",
+  "freetype-py",
+]
+authors = [
+  {name = "John Cope", email = "johnbentcope@gmail.com"}
+]
+description = "vpype ttf plugin"
+readme = {file = "README.txt", content-type = "text/markdown"}
+
 [tool.black]
 line-length = 95
