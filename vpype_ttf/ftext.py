@@ -1,4 +1,5 @@
 import freetype
+from freetype.ft_enums.ft_kerning_modes import *
 
 import click
 import numpy as np
@@ -56,7 +57,7 @@ def ftext(document: vp.Document, layer: int, filename: str, text: str, size: flo
           if is_first_in_line:
               is_first_in_line = False
           else:
-              kerning_vector = face.get_kerning(old_character, character);
+              kerning_vector = face.get_kerning(old_character, character, mode = FT_KERNING_UNSCALED)
               print(old_character, character, kerning_vector.x, kerning_vector.y)
               x_position += kerning_vector.x
               y_position += kerning_vector.y
